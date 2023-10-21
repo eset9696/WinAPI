@@ -14,16 +14,14 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	HWND hLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN); // Функция GetDlgItem() по ID ресурса дочернего окна возвращает HWND соответствующего дочернего окна
 	HWND hPassword = GetDlgItem(hwnd, IDC_EDIT_PASSWORD);
-	HWND hStaticPassword = GetDlgItem(hwnd, IDC_STATIC_PASSWORD);
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 	{
 		HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
 		SendMessage(hwnd, WM_SETICON, 0, (LRESULT)hIcon);
-		//SetFocus(GetDlgItem(hwnd, IDC_EDIT_LOGIN));
 		SetWindowText(hLogin, "Введите имя пользователя");
-		//Edit_SetText(hLogin, "Введите имя пользователя");
+		SetWindowText(hPassword, "Введите пароль");
 		
 	}
 	break;
@@ -39,7 +37,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			// 2) Получаем обработчик текстового поля "LOGIN:"
 			//HWND hLogin = GetDlgItem(hwnd, IDC_EDIT_LOGIN); // Функция GetDlgItem() по ID ресурса дочернего окна возвращает HWND соответствующего дочернего окна
 			//HWND hPassword = GetDlgItem(hwnd, IDC_EDIT_PASSWORD);
-			//HWND hStaticPassword = GetDlgItem(hwnd, IDC_STATIC_PASSWORD);
+			HWND hStaticPassword = GetDlgItem(hwnd, IDC_STATIC_PASSWORD);
 			// 3) Читаем тест из тестового поля "Login:" 
 			SendMessage(hLogin, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
 			// 4) Загружаем содержимое текстового буфера в поле "Password:":
@@ -51,11 +49,42 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 		case IDC_EDIT_LOGIN:
 		{
+			CHAR l_buffer[256] = {};
+			CHAR l_default[256] = { "Введите имя пользователя" };
+			SendMessage(hLogin, WM_GETTEXT, 256, (LPARAM)l_buffer);
+			SendMessage(hLogin, WM_CTLCOLOR, 256, (LPARAM)l_buffer);
 			switch (HIWORD(wParam))
 			{
-			case EN_SETFOCUS: SetWindowText(hLogin, "");
+			case EN_SETFOCUS: 
+				if (*l_buffer == *l_default)
+					SetWindowText(hLogin, "");
 				break;
-			case EN_KILLFOCUS: SetWindowText(hLogin, "Введите имя пользователя");
+			case EN_KILLFOCUS: 
+				if(l_buffer[0] == '\0') 
+				{
+					SetWindowText(hLogin, l_default);
+				}
+				break;
+			}
+			break;
+		}
+		case IDC_EDIT_PASSWORD:
+		{
+			CHAR p_buffer[256] = {};
+			CHAR p_default[256] = { "Введите пароль" };
+			SendMessage(hPassword, WM_GETTEXT, 256, (LPARAM)p_buffer);
+			switch (HIWORD(wParam))
+			{
+			case EN_SETFOCUS:
+				if (*p_buffer == *p_default)
+					SetWindowText(hPassword, "");
+				break;
+			case EN_KILLFOCUS:
+			{
+				if (p_buffer[0] == '\0')
+					SetWindowText(hPassword, p_default);
+
+			}
 				break;
 			}
 			break;
