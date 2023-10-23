@@ -52,7 +52,6 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CHAR l_buffer[256] = {};
 			CHAR l_default[256] = { "¬ведите им€ пользовател€" };
 			SendMessage(hLogin, WM_GETTEXT, 256, (LPARAM)l_buffer);
-			SendMessage(hLogin, WM_CTLCOLOR, 256, (LPARAM)l_buffer);
 			switch (HIWORD(wParam))
 			{
 			case EN_SETFOCUS: 
