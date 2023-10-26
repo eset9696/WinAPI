@@ -57,7 +57,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 			int i = SendMessage(hList, LB_GETCURSEL, 0, 0);
 			SendMessage(hList, LB_GETTEXT, i, (LPARAM)sz_buffer);
 			CHAR sz_message[SIZE] = {};
-			sprintf(sz_message, "¬ы выбрали элемент %i со значением \"%s\"", i, sz_buffer);
+			sprintf(sz_message, "¬ы выбрали элемент %i со значением \"%s\".", i, sz_buffer);
 			MessageBox(hwnd, sz_message, "Info", MB_OK | MB_ICONINFORMATION);
 		}
 		break;
@@ -79,7 +79,7 @@ BOOL CALLBACK DlgProcAdd(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 		HICON hIcon = ExtractIconA(GetModuleHandle(NULL), "Add.ico", 0);
 		SendMessage(hwnd, WM_SETICON, 0, (LRESULT)hIcon);
 		HWND hStaticAdd = GetDlgItem(hwnd, IDC_STATIC_ADD);
-		SendMessage(hStaticAdd, WM_SETTEXT, 0, (LPARAM)"¬ведите добавл€емое значение");
+		SendMessage(hStaticAdd, WM_SETTEXT, 0, (LPARAM)"¬ведите добавл€емое значение:");
 	}
 	break;
 	case WM_COMMAND:
@@ -97,7 +97,7 @@ BOOL CALLBACK DlgProcAdd(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 			SendMessage(hEditAdd, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
 			SendMessage(hParentEdit, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
 			CHAR sz_message[SIZE] = {};
-			sprintf(sz_message, "Ёлемент со значением \"%s\" добавлен в список", sz_buffer);
+			sprintf(sz_message, "Ёлемент со значением \"%s\" добавлен в список.", sz_buffer);
 			MessageBox(hwnd, sz_message, "Info", MB_OK | MB_ICONINFORMATION);
 			EndDialog(hwnd, 0);
 		}
@@ -119,7 +119,7 @@ BOOL CALLBACK DlgProcDelete(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 	HWND hParent = GetParent(hwnd);
 	HWND hParentList = GetDlgItem(hParent, IDC_LIST1);
 	int i = SendMessage(hParentList, LB_GETCURSEL, 0, 0);
-	SendMessage(hParentList, LB_GETTEXT, 0, (LPARAM)sz_buffer);
+	SendMessage(hParentList, LB_GETTEXT, i, (LPARAM)sz_buffer);
 	CHAR sz_message[SIZE] = {};
 	switch (uMsg)
 	{
@@ -139,7 +139,7 @@ BOOL CALLBACK DlgProcDelete(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 		case IDC_BUTTON_YES1:
 		{
 			SendMessage(hParentList, LB_DELETESTRING, i, 0);
-			sprintf(sz_message, "Ёлемент \"%s\" удален из списка", sz_buffer);
+			sprintf(sz_message, "Ёлемент \"%s\" удален из списка.", sz_buffer);
 			MessageBox(hwnd, sz_message, "Info", MB_OK | MB_ICONINFORMATION);
 			EndDialog(hwnd, 0);
 		}
