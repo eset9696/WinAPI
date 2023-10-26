@@ -6,7 +6,8 @@
 CONST CHAR* g_sz_VALUES[] = { "This", "is", "my", "first", "List","box" };
 
 BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam);
-BOOL CALLBACK DlgProc2(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam);
+BOOL CALLBACK DlgProcAdd(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam);
+BOOL CALLBACK DlgProcDelete(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -20,6 +21,8 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 	{
 	case WM_INITDIALOG:
 	{
+		HICON hIcon = ExtractIconA(GetModuleHandle(NULL), "List.ico", 0);
+		SendMessage(hwnd, WM_SETICON, 0, (LRESULT)hIcon);
 		HWND hList = GetDlgItem(hwnd, IDC_LIST1);
 		for(int i = 0; i < sizeof(g_sz_VALUES) / sizeof(g_sz_VALUES[0]); i++)
 		{
@@ -33,11 +36,19 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 		{
 		case IDC_BUTTON_ADD1:
 		{
-
-			DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG2), NULL, (DLGPROC)DlgProc2, 0);
+			DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG2), hwnd, (DLGPROC)DlgProcAdd, 0);
 		}
 			break;
-
+		case IDC_BUTTON_DELETE1:
+		{
+			CONST INT SIZE = 256;
+			CHAR sz_buffer[SIZE] = {};
+			HWND hList = GetDlgItem(hwnd, IDC_LIST1);
+			int i = SendMessage(hList, LB_GETCURSEL, 0, 0);
+			SendMessage(hList, LB_GETTEXT, i, (LPARAM)sz_buffer);
+			DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG3), hwnd, (DLGPROC)DlgProcDelete, 0);
+		}
+		break;
 		case IDOK:
 		{
 			CONST INT SIZE = 256;
@@ -59,13 +70,16 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
-BOOL CALLBACK DlgProc2(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
+BOOL CALLBACK DlgProcAdd(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
 	{
-		
+		HICON hIcon = ExtractIconA(GetModuleHandle(NULL), "Add.ico", 0);
+		SendMessage(hwnd, WM_SETICON, 0, (LRESULT)hIcon);
+		HWND hStaticAdd = GetDlgItem(hwnd, IDC_STATIC_ADD);
+		SendMessage(hStaticAdd, WM_SETTEXT, 0, (LPARAM)"¬ведите добавл€емое значение");
 	}
 	break;
 	case WM_COMMAND:
@@ -77,13 +91,60 @@ BOOL CALLBACK DlgProc2(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 		{
 			CONST INT SIZE = 256;
 			CHAR sz_buffer[256] = {};
-			HWND hParent = GetDlgItem(hwnd, IDC_LIST1);
+			HWND hParent = GetParent(hwnd);
+			HWND hParentEdit = GetDlgItem(hParent, IDC_LIST1);
 			HWND hEditAdd = GetDlgItem(hwnd, IDC_EDIT_ADD);
 			SendMessage(hEditAdd, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
-			SendMessage(hParent, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
+			SendMessage(hParentEdit, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
+			CHAR sz_message[SIZE] = {};
+			sprintf(sz_message, "Ёлемент со значением \"%s\" добавлен в список", sz_buffer);
+			MessageBox(hwnd, sz_message, "Info", MB_OK | MB_ICONINFORMATION);
+			EndDialog(hwnd, 0);
 		}
 		break;
 		case IDCANCEL: EndDialog(hwnd, 0); break;
+		}
+	}
+	break;
+	case WM_CLOSE: EndDialog(hwnd, 0); break;
+	}
+	return FALSE;
+}
+
+BOOL CALLBACK DlgProcDelete(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
+{
+	HWND hStatic = GetDlgItem(hwnd, IDC_STATIC_DELETE);
+	CONST INT SIZE = 256;
+	CHAR sz_buffer[SIZE] = {};
+	HWND hParent = GetParent(hwnd);
+	HWND hParentList = GetDlgItem(hParent, IDC_LIST1);
+	int i = SendMessage(hParentList, LB_GETCURSEL, 0, 0);
+	SendMessage(hParentList, LB_GETTEXT, 0, (LPARAM)sz_buffer);
+	CHAR sz_message[SIZE] = {};
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+	{
+		HICON hIcon = ExtractIconA(GetModuleHandle(NULL), "Remove.ico", 0);
+		SendMessage(hwnd, WM_SETICON, 0, (LRESULT)hIcon);
+		sprintf(sz_message, "¬ы действительно хотите удалить элемент \"%s\" ?", sz_buffer);
+		SendMessage(hStatic, WM_SETTEXT, 0, (LPARAM)sz_message);
+	}
+	break;
+	case WM_COMMAND:
+	{
+		switch (LOWORD(wParam))
+		{
+
+		case IDC_BUTTON_YES1:
+		{
+			SendMessage(hParentList, LB_DELETESTRING, i, 0);
+			sprintf(sz_message, "Ёлемент \"%s\" удален из списка", sz_buffer);
+			MessageBox(hwnd, sz_message, "Info", MB_OK | MB_ICONINFORMATION);
+			EndDialog(hwnd, 0);
+		}
+		break;
+		case IDC_BUTTON_NO1: EndDialog(hwnd, 0); break;
 		}
 	}
 	break;
