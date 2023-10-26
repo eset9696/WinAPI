@@ -1,5 +1,5 @@
 #include<Windows.h>
-#include"resource.h"
+//#include"resource.h"
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "My Window Class"; // Имя класса окна
 
@@ -17,8 +17,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	wc.cbClsExtra = 0; // Дополнительные байты класса окна
 	wc.style = 0; // Стиль окна
 
-	wc.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON_CUBE));
-	wc.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON_SUCCESS));
+	wc.hIcon = ExtractIconA(hInstance, "game.ico", 0);
+	wc.hIconSm = ExtractIconA(hInstance, "global.ico", 0);
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = HBRUSH(COLOR_WINDOW + 1);
 
@@ -34,7 +34,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		MessageBox(NULL, "ClassRegistration failed", "Error", MB_OK | MB_ICONERROR);
 	}
 	
-
+	INT windowWeight = 3 * GetSystemMetrics(SM_CXSCREEN) / 4;
+	INT windowHeight = 3 *GetSystemMetrics(SM_CYSCREEN) / 4;
 	// 2) Создание окна
 	HWND hwnd = CreateWindowEx
 	(
@@ -43,7 +44,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		g_sz_WINDOW_CLASS, // Window name
 		WS_OVERLAPPEDWINDOW, // У главгого окна весгда будет такой стиль
 		CW_USEDEFAULT, CW_USEDEFAULT, // Позиция окна на экране
-		CW_USEDEFAULT, CW_USEDEFAULT, // размер окна
+		windowWeight, windowHeight, // размер окна
 		NULL, // Parent window
 		NULL, // hMenu - для главного окна этот параметр содержит ID ресурса меню 
 		      // Для дочернего окна, которое является элементом другого окна, в hMenu передается ID ресурса этого элемента
