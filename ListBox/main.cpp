@@ -80,6 +80,7 @@ BOOL CALLBACK DlgProcAdd(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 		SendMessage(hwnd, WM_SETICON, 0, (LRESULT)hIcon);
 		HWND hStaticAdd = GetDlgItem(hwnd, IDC_STATIC_ADD);
 		SendMessage(hStaticAdd, WM_SETTEXT, 0, (LPARAM)"¬ведите добавл€емое значение:");
+		SetFocus(GetDlgItem(hwnd, IDC_EDIT_ADD));
 	}
 	break;
 	case WM_COMMAND:
@@ -95,18 +96,23 @@ BOOL CALLBACK DlgProcAdd(HWND hwnd, UINT uMsg, LPARAM wParam, LPARAM lParam)
 			HWND hParentEdit = GetDlgItem(hParent, IDC_LIST1);
 			HWND hEditAdd = GetDlgItem(hwnd, IDC_EDIT_ADD);
 			SendMessage(hEditAdd, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
-			SendMessage(hParentEdit, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
-			CHAR sz_message[SIZE] = {};
-			sprintf(sz_message, "Ёлемент со значением \"%s\" добавлен в список.", sz_buffer);
-			MessageBox(hwnd, sz_message, "Info", MB_OK | MB_ICONINFORMATION);
-			EndDialog(hwnd, 0);
+			if(SendMessage(hParentEdit, LB_FINDSTRING, -1, (LPARAM)sz_buffer) == CB_ERR)
+			{
+				if (strlen(sz_buffer) == 0) break;
+				SendMessage(hParentEdit, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
+				EndDialog(hwnd, 0);
+			}
+			else
+			{
+				MessageBox(hwnd, "“акое значение уже есть", "Info", MB_OK | MB_ICONINFORMATION);
+			}
 		}
 		break;
 		case IDCANCEL: EndDialog(hwnd, 0); break;
 		}
 	}
 	break;
-	case WM_CLOSE: EndDialog(hwnd, 0); break;
+	case WM_CLOSE: EndDialog(hwnd, 0); break; 
 	}
 	return FALSE;
 }
