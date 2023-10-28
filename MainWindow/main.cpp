@@ -103,7 +103,8 @@ void GetWindowParams(HWND hwnd)
 	int Width = wp.right - wp.left;
 	int Height = wp.bottom - wp.top;
 	CHAR sz_message[256] = {};
-	sprintf(sz_message, "%s X = %i, Y = %i, Width = %i, Height = %i. Cursor_X = %i, Cursor_Y = %i", g_sz_WINDOW_CLASS, wp.left, wp.top, Width, Height, p.x, p.y);
+	sprintf(sz_message, "%s [X = %i, Y = %i, Width = %i, Height = %i. Cursor_X = %i, Cursor_Y = %i]",
+		g_sz_WINDOW_CLASS, wp.left, wp.top, Width, Height, p.x, p.y);
 	SetWindowText(hwnd, sz_message);
 }
 
