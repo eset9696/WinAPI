@@ -4,7 +4,7 @@
 //#include"resource.h"
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "My window"; // Имя класса окна
-void GetSizeAndPosition(HWND hwnd);
+void GetWindowParams(HWND hwnd);
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
@@ -77,10 +77,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_CREATE:
 		break;
 	case WM_MOVE:
-		GetSizeAndPosition(hwnd);
+		GetWindowParams(hwnd);
 	break;
 	case WM_SIZE:
-		GetSizeAndPosition(hwnd);
+		GetWindowParams(hwnd);
+		break;
+	case WM_MOUSEMOVE:
+		GetWindowParams(hwnd);
 		break;
 	case WM_COMMAND:
 		break;
@@ -91,13 +94,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return NULL;
 }
 
-void GetSizeAndPosition(HWND hwnd)
+void GetWindowParams(HWND hwnd)
 {
 	RECT wp;
+	POINT p;
+	GetCursorPos(&p);
 	GetWindowRect(hwnd, &wp);
 	int Width = wp.right - wp.left;
 	int Height = wp.bottom - wp.top;
 	CHAR sz_message[256] = {};
-	sprintf(sz_message, "%s X = %i, Y = %i, SIZE: %i, %i.", g_sz_WINDOW_CLASS, wp.left, wp.top, Width, Height);
+	sprintf(sz_message, "%s X = %i, Y = %i, Width = %i, Height = %i. Cursor_X = %i, Cursor_Y = %i", g_sz_WINDOW_CLASS, wp.left, wp.top, Width, Height, p.x, p.y);
 	SetWindowText(hwnd, sz_message);
 }
+
