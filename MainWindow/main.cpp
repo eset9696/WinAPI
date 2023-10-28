@@ -4,7 +4,7 @@
 //#include"resource.h"
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "My window"; // Имя класса окна
-
+void GetSizeAndPosition(HWND hwnd);
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
@@ -38,13 +38,12 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	
 	INT windowWidth = 3 * GetSystemMetrics(SM_CXSCREEN) / 4;
 	INT windowHeight = 3 *GetSystemMetrics(SM_CYSCREEN) / 4;
-	RECT wp;
 	// 2) Создание окна
 	HWND hwnd = CreateWindowEx
 	(
 		NULL,
 		g_sz_WINDOW_CLASS, // Class name
-		"", // Window name
+		g_sz_WINDOW_CLASS, // Window name
 		WS_OVERLAPPEDWINDOW, // У главгого окна весгда будет такой стиль
 		CW_USEDEFAULT, CW_USEDEFAULT, // Позиция окна на экране
 		windowWidth, windowHeight, // размер окна
@@ -64,10 +63,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	MSG msg;
 	while(GetMessage(&msg, 0, 0, 0) > 0)
 	{
-		GetWindowRect(hwnd, &wp);
-		CHAR sz_message[256] = {};
-		sprintf(sz_message, "X = %x, Y = %y, SIZE: %a, %b.", wp.left, wp.top, (wp.right - wp.left), (wp.bottom - wp.top));
-		SetWindowText(hwnd, sz_message);
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
@@ -81,6 +76,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 		break;
+	case WM_MOVE:
+		GetSizeAndPosition(hwnd);
+	break;
+	case WM_SIZE:
+		GetSizeAndPosition(hwnd);
+		break;
 	case WM_COMMAND:
 		break;
 	case WM_DESTROY: PostQuitMessage(0); break;
@@ -88,4 +89,15 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	default: return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 	return NULL;
+}
+
+void GetSizeAndPosition(HWND hwnd)
+{
+	RECT wp;
+	GetWindowRect(hwnd, &wp);
+	int Width = wp.right - wp.left;
+	int Height = wp.bottom - wp.top;
+	CHAR sz_message[256] = {};
+	sprintf(sz_message, "%s X = %i, Y = %i, SIZE: %i, %i.", g_sz_WINDOW_CLASS, wp.left, wp.top, Width, Height);
+	SetWindowText(hwnd, sz_message);
 }
