@@ -1,7 +1,9 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include<Windows.h>
+#include <cstdio>
 //#include"resource.h"
 
-CONST CHAR g_sz_WINDOW_CLASS[] = "My Window Class"; // Имя класса окна
+CONST CHAR g_sz_WINDOW_CLASS[] = "My window"; // Имя класса окна
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -17,9 +19,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	wc.cbClsExtra = 0; // Дополнительные байты класса окна
 	wc.style = 0; // Стиль окна
 
-	wc.hIcon = ExtractIconA(hInstance, "game.ico", 0);
-	wc.hIconSm = ExtractIconA(hInstance, "global.ico", 0);
-	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wc.hIcon = (HICON)LoadImage(hInstance, "game.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
+	wc.hIconSm = (HICON)LoadImage(hInstance, "global.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE, LR_LOADFROMFILE);
+	wc.hCursor = LoadCursorFromFile("MyCursor.ani");
 	wc.hbrBackground = HBRUSH(COLOR_WINDOW + 1);
 
 	wc.hInstance = hInstance; // Экземпляр исполняемого файла программы в памяти
@@ -34,17 +36,18 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		MessageBox(NULL, "ClassRegistration failed", "Error", MB_OK | MB_ICONERROR);
 	}
 	
-	INT windowWeight = 3 * GetSystemMetrics(SM_CXSCREEN) / 4;
+	INT windowWidth = 3 * GetSystemMetrics(SM_CXSCREEN) / 4;
 	INT windowHeight = 3 *GetSystemMetrics(SM_CYSCREEN) / 4;
+	RECT wp;
 	// 2) Создание окна
 	HWND hwnd = CreateWindowEx
 	(
 		NULL,
 		g_sz_WINDOW_CLASS, // Class name
-		g_sz_WINDOW_CLASS, // Window name
+		"", // Window name
 		WS_OVERLAPPEDWINDOW, // У главгого окна весгда будет такой стиль
 		CW_USEDEFAULT, CW_USEDEFAULT, // Позиция окна на экране
-		windowWeight, windowHeight, // размер окна
+		windowWidth, windowHeight, // размер окна
 		NULL, // Parent window
 		NULL, // hMenu - для главного окна этот параметр содержит ID ресурса меню 
 		      // Для дочернего окна, которое является элементом другого окна, в hMenu передается ID ресурса этого элемента
@@ -61,6 +64,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	MSG msg;
 	while(GetMessage(&msg, 0, 0, 0) > 0)
 	{
+		GetWindowRect(hwnd, &wp);
+		CHAR sz_message[256] = {};
+		sprintf(sz_message, "X = %x, Y = %y, SIZE: %a, %b.", wp.left, wp.top, (wp.right - wp.left), (wp.bottom - wp.top));
+		SetWindowText(hwnd, sz_message);
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
