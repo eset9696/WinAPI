@@ -38,6 +38,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	
 	INT windowWidth = 3 * GetSystemMetrics(SM_CXSCREEN) / 4;
 	INT windowHeight = 3 *GetSystemMetrics(SM_CYSCREEN) / 4;
+	INT start_x =GetSystemMetrics(SM_CXSCREEN) / 8;
+	INT start_y =GetSystemMetrics(SM_CYSCREEN) / 8;
 	// 2) Создание окна
 	HWND hwnd = CreateWindowEx
 	(
@@ -45,7 +47,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		g_sz_WINDOW_CLASS, // Class name
 		g_sz_WINDOW_CLASS, // Window name
 		WS_OVERLAPPEDWINDOW, // У главгого окна весгда будет такой стиль
-		CW_USEDEFAULT, CW_USEDEFAULT, // Позиция окна на экране
+		start_x, start_y, // Позиция окна на экране
 		windowWidth, windowHeight, // размер окна
 		NULL, // Parent window
 		NULL, // hMenu - для главного окна этот параметр содержит ID ресурса меню 
