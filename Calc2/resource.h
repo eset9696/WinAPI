@@ -13,7 +13,7 @@
 #define IDC_BUTTON_7		1007
 #define IDC_BUTTON_8		1008
 #define IDC_BUTTON_9		1009
-
+ 
 #define IDC_BUTTON_POINT	1010
 
 #define IDC_BUTTON_PLUS		1011
@@ -24,7 +24,6 @@
 #define IDC_BUTTON_CLEAR	1016
 #define IDC_BUTTON_BSP		1017
 
-#define ICO_EDIT			""
 #define ICO_BUTTON_0		"zero.ico"
 #define ICO_BUTTON_1		"one.ico"
 #define ICO_BUTTON_2		"two.ico"
@@ -36,15 +35,17 @@
 #define ICO_BUTTON_8		"eight.ico"
 #define ICO_BUTTON_9		"nine.ico"
 
-#define ICO_BUTTON_POINT	""
+#define ICO_BUTTON_POINT	"point.ico"
 
 #define ICO_BUTTON_PLUS		"plus.ico"
 #define ICO_BUTTON_MINUS	"minus.ico"
-#define ICO_BUTTON_ASTER	""
+#define ICO_BUTTON_ASTER	"x.ico"
 #define ICO_BUTTON_SLASH	"divide.ico"
 #define ICO_BUTTON_EQUAL	"equal.ico"
-#define ICO_BUTTON_CLEAR	""
-#define ICO_BUTTON_BSP		""
+#define ICO_BUTTON_CLEAR	"equal.ico"
+#define ICO_BUTTON_BSP		"bsp.ico"
+
+//#define ICON[] = {"zero.ico", "one.ico", "two.ico", "three.ico", "four.ico", "five.ico", "six.ico", "seven.ico", "eight.ico", "nine.ico"}
 
 // Next default values for new objects
 // 

@@ -1,9 +1,14 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #include<Windows.h>
 #include<stdio.h>
+#include<string>
+
 #include"resource.h"
 
 CONST CHAR g_sz_CLASSNAME[] = "Calc";
+
+CONST CHAR* myIcons[] = { "zero.ico", "one.ico", "two.ico", "three.ico", "four.ico", "five.ico", "six.ico", "seven.ico", "eight.ico",
+	"nine.ico",  "point.ico", "plus.ico", "minus.ico", "x.ico", "divide.ico", "equal.ico", "clear.ico", "bsp.ico" };
 
 CONST INT START_X = 10;
 CONST INT START_Y = 10;
@@ -85,6 +90,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	static INT operation = 0;
 	static BOOL input = false;	//����������� ���� �����
 	static BOOL input_operation = false;	//����������� ���� ��������
+
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -110,8 +116,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				sz_digit[0] = digit + 48;
 				CreateWindowEx
 				(
-					NULL, "Button", sz_digit,
-					WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON,
+					NULL, "Button", "",
+					WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 					BUTTON_START_X + (BUTTON_SIZE + INTERVAL) * j,
 					BUTTON_START_Y + (BUTTON_SIZE + INTERVAL) * i / 3,
 					BUTTON_SIZE, BUTTON_SIZE,
@@ -122,10 +128,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				);
 			}
 		}
+		
+		
 		CreateWindowEx
 		(
 			NULL, "Button", "0",
-			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON,
+			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			BUTTON_START_X, BUTTON_START_Y + (BUTTON_SIZE + INTERVAL) * 3,
 			BUTTON_DOUBLE_SIZE, BUTTON_SIZE,
 			hwnd,
@@ -136,7 +144,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", ".",
-			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON,
+			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			BUTTON_START_X + BUTTON_DOUBLE_SIZE + INTERVAL, BUTTON_START_Y + (BUTTON_SIZE + INTERVAL) * 3,
 			BUTTON_SIZE, BUTTON_SIZE,
 			hwnd,
@@ -150,7 +158,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CreateWindowEx
 			(
 				NULL, "Button", OPERATIONS[i],
-				WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON,
+				WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 				BUTTON_START_X + (BUTTON_SIZE + INTERVAL) * 3, BUTTON_START_Y + (BUTTON_SIZE + INTERVAL) * i,
 				BUTTON_SIZE, BUTTON_SIZE,
 				hwnd,
@@ -162,7 +170,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", "<-",
-			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON,
+			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			BUTTON_START_X + (BUTTON_SIZE + INTERVAL) * 4, BUTTON_START_Y,
 			BUTTON_SIZE, BUTTON_SIZE,
 			hwnd,
@@ -173,7 +181,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", "C",
-			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON,
+			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			BUTTON_START_X + (BUTTON_SIZE + INTERVAL) * 4, BUTTON_START_Y + BUTTON_SIZE + INTERVAL,
 			BUTTON_SIZE, BUTTON_SIZE,
 			hwnd,
@@ -181,18 +189,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-		SendMessage(GetDlgItem(CreateWindowEx
+		
+		CreateWindowEx
 		(
-			NULL, "Button", "=",
-			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON,
+			NULL, "Button", "",
+			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
 			BUTTON_START_X + (BUTTON_SIZE + INTERVAL) * 4, BUTTON_START_Y + BUTTON_DOUBLE_SIZE + INTERVAL,
 			BUTTON_SIZE, BUTTON_DOUBLE_SIZE,
 			hwnd,
 			(HMENU)IDC_BUTTON_EQUAL,
 			GetModuleHandle(NULL),
 			NULL
-		), IDC_BUTTON_EQUAL), BM_SETIMAGE, IMAGE_ICON, (LPARAM)(ExtractIcon(GetModuleHandleA(NULL), "equal.ico", 0)));
-		
+		);
+		for (int i = 0; i < 18; i++)
+		{
+			HWND hButton = GetDlgItem(hwnd, IDC_BUTTON_0 + i);
+			HICON iButton = (HICON)LoadImage(GetModuleHandle(NULL), (LPCSTR)myIcons[i], IMAGE_ICON, BUTTON_SIZE, BUTTON_SIZE, LR_CREATEDIBSECTION | LR_LOADFROMFILE);
+			SendMessage(hButton, BM_SETIMAGE, IMAGE_ICON, (LPARAM)iButton);
+		}
 	}
 	break;
 	case WM_COMMAND:
