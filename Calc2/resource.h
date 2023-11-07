@@ -24,26 +24,13 @@
 #define IDC_BUTTON_CLEAR	1016
 #define IDC_BUTTON_BSP		1017
 
-#define ICO_BUTTON_0		"zero.ico"
-#define ICO_BUTTON_1		"one.ico"
-#define ICO_BUTTON_2		"two.ico"
-#define ICO_BUTTON_3		"three.ico"
-#define ICO_BUTTON_4		"four.ico"
-#define ICO_BUTTON_5		"five.ico"
-#define ICO_BUTTON_6		"six.ico"
-#define ICO_BUTTON_7		"seven.ico"
-#define ICO_BUTTON_8		"eight.ico"
-#define ICO_BUTTON_9		"nine.ico"
+#define IDM_THEME_MENU			100
+#define IDM_SUBMENU_SQR_BLUE	101
+#define IDM_SUBMENU_SQR_GRN		102
+#define IDM_SUBMENU_RND_GRN		103
+#define IDM_MINIMIZE			104
+#define IDM_CLOSE				105
 
-#define ICO_BUTTON_POINT	"point.ico"
-
-#define ICO_BUTTON_PLUS		"plus.ico"
-#define ICO_BUTTON_MINUS	"minus.ico"
-#define ICO_BUTTON_ASTER	"x.ico"
-#define ICO_BUTTON_SLASH	"divide.ico"
-#define ICO_BUTTON_EQUAL	"equal.ico"
-#define ICO_BUTTON_CLEAR	"equal.ico"
-#define ICO_BUTTON_BSP		"bsp.ico"
 
 //#define ICON[] = {"zero.ico", "one.ico", "two.ico", "three.ico", "four.ico", "five.ico", "six.ico", "seven.ico", "eight.ico", "nine.ico"}
 

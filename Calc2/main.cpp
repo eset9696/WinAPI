@@ -1,14 +1,12 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #include<Windows.h>
+#include<Windowsx.h>
 #include<stdio.h>
 #include<string>
 
 #include"resource.h"
 
 CONST CHAR g_sz_CLASSNAME[] = "Calc";
-
-CONST CHAR* myIcons[] = { "zero.ico", "one.ico", "two.ico", "three.ico", "four.ico", "five.ico", "six.ico", "seven.ico", "eight.ico",
-	"nine.ico",  "point.ico", "plus.ico", "minus.ico", "x.ico", "divide.ico", "equal.ico", "clear.ico", "bsp.ico" };
 
 CONST INT START_X = 10;
 CONST INT START_Y = 10;
@@ -18,14 +16,78 @@ CONST INT INTERVAL = 5;
 CONST INT BUTTON_DOUBLE_SIZE = BUTTON_SIZE * 2 + INTERVAL;
 
 CONST INT SCREEN_WIDTH = (BUTTON_SIZE) * 5 + INTERVAL * 4;
-CONST INT SCREEN_HEIGHT = 20;
+CONST INT SCREEN_HEIGHT = 50;
+
+CONST INT DISPLAY_FONT_HEIGHT = SCREEN_HEIGHT - 2;
+CONST INT DISPLAY_FONT_WIDTH = DISPLAY_FONT_HEIGHT / 3;
+
+CONST CHAR DISPLAY_FONT[] = "Tahoma";
 
 CONST INT BUTTON_START_X = START_X;
 CONST INT BUTTON_START_Y = START_Y + SCREEN_HEIGHT + INTERVAL * 2;
 
 CONST CHAR* OPERATIONS[] = { "/", "*", "-", "+" };
+CONST CHAR* BUTTON_NAMES[] = {"point", "plus", "minus", "aster", "slash", "equal"};
+
+
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+VOID SetSkin(HWND hwnd, CONST CHAR* sz_skin);
+
+//VOID APIENTRY DisplayContextMenu(HWND hwnd, POINT pt)
+//{
+//	HMENU hmenu;            // top-level menu 
+//	HMENU hmenuTrackPopup;  // shortcut menu 
+//
+//	// Load the menu resource. 
+//
+//	if ((hmenu = LoadMenu(GetModuleHandle(NULL), "ShortcutExample")) == NULL)
+//		return;
+//
+//	// TrackPopupMenu cannot display the menu bar so get 
+//	// a handle to the first shortcut menu. 
+//
+//	hmenuTrackPopup = GetSubMenu(hmenu, 0);
+//
+//	// Display the shortcut menu. Track the right mouse 
+//	// button. 
+//
+//	TrackPopupMenu(hmenuTrackPopup,
+//		TPM_LEFTALIGN | TPM_RIGHTBUTTON,
+//		pt.x, pt.y, 0, hwnd, NULL);
+//
+//	// Destroy the menu. 
+//
+//	DestroyMenu(hmenu);
+//}
+//
+//BOOL WINAPI OnContextMenu(HWND hwnd, int x, int y)
+//{
+//	RECT rc;                    // client area of window 
+//	POINT pt = { x, y };        // location of mouse click 
+//
+//	// Get the bounding rectangle of the client area. 
+//
+//	GetClientRect(hwnd, &rc);
+//
+//	// Convert the mouse position to client coordinates. 
+//
+//	ScreenToClient(hwnd, &pt);
+//
+//	// If the position is in the client area, display a  
+//	// shortcut menu. 
+//
+//	if (PtInRect(&rc, pt))
+//	{
+//		ClientToScreen(hwnd, &pt);
+//		DisplayContextMenu(hwnd, pt);
+//		return TRUE;
+//	}
+//
+//	// Return FALSE if no menu is displayed. 
+//
+//	return FALSE;
+//}
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmsLine, INT nCmdShow)
 {
@@ -40,7 +102,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmsLine, IN
 	wc.hIcon = ExtractIconA(hInstance, "calc.ico", 0);
 	wc.hIconSm = ExtractIconA(hInstance, "calc.ico", 0);
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)(COLOR_WINDOW);
+	wc.hbrBackground = CreateSolidBrush(RGB(0, 0, 255));
+	//wc.hbrBackground = (HBRUSH)(COLOR_WINDOW);
 
 	wc.hInstance = hInstance;
 	wc.lpszClassName = g_sz_CLASSNAME;
@@ -59,7 +122,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmsLine, IN
 		g_sz_CLASSNAME,
 		g_sz_CLASSNAME,
 		WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX,
-		//WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		(BUTTON_SIZE + INTERVAL) * 5 + BUTTON_START_X * 3, SCREEN_HEIGHT + (BUTTON_SIZE + INTERVAL) * 5 + INTERVAL * 2,
 		NULL,
@@ -98,7 +160,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HWND hEdit = CreateWindowEx
 		(
 			NULL, "Edit", "Screen",
-			WS_CHILDWINDOW | WS_VISIBLE | WS_BORDER | ES_RIGHT | ES_READONLY,
+			WS_CHILDWINDOW | WS_VISIBLE | /*WS_BORDER |*/ ES_RIGHT,
 			START_X, START_Y,
 			SCREEN_WIDTH, SCREEN_HEIGHT,
 			hwnd,
@@ -106,6 +168,21 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+
+		HFONT hFont = CreateFontA
+		(
+			DISPLAY_FONT_HEIGHT, DISPLAY_FONT_WIDTH, 
+			GM_ADVANCED, 0, 600, //Escapment, Orientation, Weingh
+			FALSE, FALSE, FALSE, // Italic - курсив, Underline - подчеркивание, Strikeout - перечеркнутый
+			DEFAULT_CHARSET,
+			OUT_CHARACTER_PRECIS,
+			CLIP_CHARACTER_PRECIS,
+			ANTIALIASED_QUALITY,
+			DEFAULT_PITCH | FF_DONTCARE,
+			DISPLAY_FONT );
+
+		SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
+
 		int digit = 0;
 		char sz_digit[2] = "";
 		for (int i = 6; i >= 0; i -= 3)
@@ -117,7 +194,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				CreateWindowEx
 				(
 					NULL, "Button", "",
-					WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
+					WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
 					BUTTON_START_X + (BUTTON_SIZE + INTERVAL) * j,
 					BUTTON_START_Y + (BUTTON_SIZE + INTERVAL) * i / 3,
 					BUTTON_SIZE, BUTTON_SIZE,
@@ -133,7 +210,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", "0",
-			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
+			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
 			BUTTON_START_X, BUTTON_START_Y + (BUTTON_SIZE + INTERVAL) * 3,
 			BUTTON_DOUBLE_SIZE, BUTTON_SIZE,
 			hwnd,
@@ -144,7 +221,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", ".",
-			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
+			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
 			BUTTON_START_X + BUTTON_DOUBLE_SIZE + INTERVAL, BUTTON_START_Y + (BUTTON_SIZE + INTERVAL) * 3,
 			BUTTON_SIZE, BUTTON_SIZE,
 			hwnd,
@@ -158,7 +235,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CreateWindowEx
 			(
 				NULL, "Button", OPERATIONS[i],
-				WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
+				WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
 				BUTTON_START_X + (BUTTON_SIZE + INTERVAL) * 3, BUTTON_START_Y + (BUTTON_SIZE + INTERVAL) * i,
 				BUTTON_SIZE, BUTTON_SIZE,
 				hwnd,
@@ -170,7 +247,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", "<-",
-			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
+			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON,
 			BUTTON_START_X + (BUTTON_SIZE + INTERVAL) * 4, BUTTON_START_Y,
 			BUTTON_SIZE, BUTTON_SIZE,
 			hwnd,
@@ -181,7 +258,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", "C",
-			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
+			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON,
 			BUTTON_START_X + (BUTTON_SIZE + INTERVAL) * 4, BUTTON_START_Y + BUTTON_SIZE + INTERVAL,
 			BUTTON_SIZE, BUTTON_SIZE,
 			hwnd,
@@ -193,7 +270,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", "",
-			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_ICON,
+			WS_CHILDWINDOW | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
 			BUTTON_START_X + (BUTTON_SIZE + INTERVAL) * 4, BUTTON_START_Y + BUTTON_DOUBLE_SIZE + INTERVAL,
 			BUTTON_SIZE, BUTTON_DOUBLE_SIZE,
 			hwnd,
@@ -201,17 +278,46 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-		for (int i = 0; i < 18; i++)
-		{
-			HWND hButton = GetDlgItem(hwnd, IDC_BUTTON_0 + i);
-			HICON iButton = (HICON)LoadImage(GetModuleHandle(NULL), (LPCSTR)myIcons[i], IMAGE_ICON, BUTTON_SIZE, BUTTON_SIZE, LR_CREATEDIBSECTION | LR_LOADFROMFILE);
-			SendMessage(hButton, BM_SETIMAGE, IMAGE_ICON, (LPARAM)iButton);
-		}
+		HMENU hPopupMenu = CreatePopupMenu();
+		SetSkin(hwnd, "square_blue");
 	}
 	break;
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdc = (HDC)wParam;
+		SetBkMode(hdc, OPAQUE);
+		SetBkColor(hdc, RGB(0, 0, 100));
+		HBRUSH hBrush = CreateSolidBrush(RGB(255, 0, 0));
+		SetTextColor(hdc, RGB(255, 0, 0));
+		return (LRESULT)hBrush;
+	}
+		break;
+	case WM_CONTEXTMENU:
+	{
+		HMENU hMenu = CreatePopupMenu();
+		HMENU hSubMenu = CreatePopupMenu();
+
+		AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hSubMenu, "Установить тему:");
+		AppendMenu(hSubMenu, MFT_STRING, IDM_SUBMENU_SQR_BLUE, "Square blue:");
+		AppendMenu(hSubMenu, MFT_STRING, IDM_SUBMENU_SQR_GRN, "Square green:");
+		AppendMenu(hSubMenu, MFT_STRING, IDM_SUBMENU_RND_GRN, "Round green:");
+		AppendMenu(hMenu, MFT_STRING, IDM_MINIMIZE, "Свернуть");
+		AppendMenu(hMenu, MFT_STRING, IDM_CLOSE, "Закрыть");
+
+		TrackPopupMenu(hMenu, TPM_LEFTBUTTON |
+			TPM_TOPALIGN |
+			TPM_LEFTALIGN,
+			LOWORD(lParam),
+			HIWORD(lParam), 0, hwnd, NULL);
+		DestroyMenu(hSubMenu);
+		DestroyMenu(hMenu);
+	}
+		break;
 	case WM_COMMAND:
 	{
+		if(LOWORD(wParam) == IDC_EDIT && HIWORD(wParam) == EN_SETFOCUS) SetFocus(hwnd);
 		HWND hEdit = GetDlgItem(hwnd, IDC_EDIT);
+
 		//					Digits & Point
 		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9 || LOWORD(wParam) == IDC_BUTTON_POINT)
 		{
@@ -286,6 +392,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			input_operation = false;
 			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)"");
 		}
+		if (LOWORD(wParam) == IDM_SUBMENU_SQR_BLUE)
+		{
+			SetSkin(hwnd, "square_blue");
+		}
+		if (LOWORD(wParam) == IDM_SUBMENU_SQR_GRN)
+		{
+			SetSkin(hwnd, "square_green");
+		}
+		if (LOWORD(wParam) == IDM_SUBMENU_RND_GRN)
+		{
+			SetSkin(hwnd, "round_green");
+		}
+		if (LOWORD(wParam) == IDM_MINIMIZE)
+		{
+			ShowWindow(hwnd, SW_SHOWMINIMIZED);
+		}
+		if (LOWORD(wParam) == IDM_CLOSE)
+		{
+			DestroyWindow(hwnd);
+		}
 	}
 	break;
 	case WM_KEYDOWN:
@@ -317,4 +443,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	default:		return DefWindowProc(hwnd, uMsg, wParam, lParam); break;
 	}
 	return NULL;
+}
+
+VOID SetSkin(HWND hwnd, CONST CHAR* sz_skin)
+{
+	INT SIZE = 10;
+	CHAR sz_buffer[FILENAME_MAX] = {};
+	for (int i = 0; i < SIZE; i++)
+	{
+		HWND hButton = GetDlgItem(hwnd, IDC_BUTTON_0 + i);
+		sprintf(sz_buffer, "buttonsBMP\\%s\\button_%i.bmp", sz_skin, i);
+		HBITMAP hBitMap = (HBITMAP)LoadImage(
+			GetModuleHandle(NULL), sz_buffer, IMAGE_BITMAP, i == 0? BUTTON_DOUBLE_SIZE : BUTTON_SIZE, BUTTON_SIZE, LR_LOADFROMFILE);
+		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LRESULT)hBitMap);
+	}
+	for(int i = 0; i < sizeof(BUTTON_NAMES)/ sizeof(BUTTON_NAMES[0]); i++)
+	{
+		HWND hButton = GetDlgItem(hwnd, IDC_BUTTON_POINT + i);
+		sprintf(sz_buffer, "buttonsBMP\\%s\\button_%s.bmp", sz_skin, BUTTON_NAMES[i]);
+		HBITMAP hBitMap = (HBITMAP)LoadImage(
+			GetModuleHandle(NULL), sz_buffer, IMAGE_BITMAP, BUTTON_SIZE, i == 5 ? BUTTON_DOUBLE_SIZE : BUTTON_SIZE, LR_LOADFROMFILE);
+		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LRESULT)hBitMap);
+	}
 }
